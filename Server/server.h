@@ -1,3 +1,9 @@
+#ifndef SERVER_H
+#define SERVER_H
+
+#include "../Card/card.h"
+#include "../Terminal/terminal.h"
+
 typedef enum EN_transState_t
 {
      APPROVED, DECLINED_INSUFFECIENT_FUND, DECLINED_STOLEN_CARD, FRAUD_CARD, INTERNAL_SERVER_ERROR
@@ -32,3 +38,5 @@ EN_serverError_t isBlockedAccount(ST_accountsDB_t *accountRefrence);
 EN_serverError_t isAmountAvailable(ST_terminalData_t *termData, ST_accountsDB_t *accountRefrence);
 EN_serverError_t saveTransaction(ST_transaction_t *transData);
 void listSavedTransactions(void);
+
+#endif
