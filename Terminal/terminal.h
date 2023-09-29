@@ -1,9 +1,6 @@
 #ifndef TERMINAL_H
 #define TERMINAL_H
 #include "../Card/card.h"
-#include "inttypes.h"
-#include <stdio.h>
-
 typedef struct ST_terminalData_t
 {
      float transAmount;
@@ -19,10 +16,10 @@ typedef enum EN_terminalError_t
 EN_terminalError_t getTransactionDate(ST_terminalData_t *termData);
 EN_terminalError_t isCardExpired(ST_cardData_t *cardData, ST_terminalData_t *termData);
 EN_terminalError_t getTransactionAmount(ST_terminalData_t *termData);
-void getTransactionAmountTest(void);
 EN_terminalError_t isBelowMaxAmount(ST_terminalData_t *termData);
-void isBelowMaxAmountTest(void);
 EN_terminalError_t setMaxAmount(ST_terminalData_t *termData, float maxAmount);
-void setMaxAmountTest(void);
 EN_terminalError_t isValidCardPAN(ST_cardData_t *cardData); // Optional
+
+//______| testing functions |_______________
+void isCardExpriedTest(void);
 #endif
