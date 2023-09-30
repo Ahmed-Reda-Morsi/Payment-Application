@@ -15,7 +15,7 @@ typedef struct ST_transaction_t
      EN_transState_t transState;
      uint32_t transactionSequenceNumber;
 }ST_transaction_t;
-typedef enum EN_serverError_t 
+typedef enum EN_serverError_t
 {
      SERVER_OK, SAVING_FAILED, TRANSACTION_NOT_FOUND, ACCOUNT_NOT_FOUND, LOW_BALANCE, BLOCKED_ACCOUNT
 }EN_serverError_t ;
@@ -38,5 +38,8 @@ EN_serverError_t isBlockedAccount(ST_accountsDB_t *accountRefrence);
 EN_serverError_t isAmountAvailable(ST_terminalData_t *termData, ST_accountsDB_t *accountRefrence);
 EN_serverError_t saveTransaction(ST_transaction_t *transData);
 void listSavedTransactions(void);
+
+////////////////////////Testing Functions/////////////////////////////////////
+void saveTransactionTest(void);
 
 #endif
