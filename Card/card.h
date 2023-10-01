@@ -2,6 +2,11 @@
 #define CARD_H
 
 #include "inttypes.h"
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_NAME_LENGTH 24
+#define MIN_NAME_LENGTH 20
 typedef struct ST_cardData_t
 {
      uint8_t cardHolderName[25];
@@ -18,4 +23,8 @@ EN_cardError_t getCardHolderName(ST_cardData_t *cardData);
 EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData);
 EN_cardError_t getCardPAN(ST_cardData_t *cardData);
 
+//_______________| testing functions |____________________
+uint8_t isNameValid(const char *name);
+void getCardHolderNameTest(void);
+void getCardExpiryDateTest (void);
 #endif

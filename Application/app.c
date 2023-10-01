@@ -5,5 +5,6 @@
 
 void appStart(void)
 {
-
+    ST_cardData_t card1;
+    getCardHolderNameTest();
 }
