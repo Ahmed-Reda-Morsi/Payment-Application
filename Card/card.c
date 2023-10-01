@@ -1,6 +1,4 @@
-#include "card.h" 
-#include <time.h>                                                           // to get OS date 
-#include <stdlib.h>      
+    
 #include <stdio.h>
                                                   // to use atoi function to covert string to int.
 
