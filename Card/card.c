@@ -1,7 +1,10 @@
+
+    
+#include <stdio.h>
+                                                  // to use atoi function to covert string to int.
 #include "card.h"
 #include <time.h>   // to get OS date
 #include <stdlib.h> // to use atoi function to covert string to int.
-
 
 
 EN_cardError_t getCardHolderName(ST_cardData_t *cardData)
@@ -118,6 +121,89 @@ void getCardExpiryDateTest(void)
     }
 }
 
+/******************************************* getCardPAN Function **********************************************/
+
+void pan_num_input(char *pan_buffer) {
+    printf("Enter the card's Primary Account Number (PAN): ");
+    fflush(stdin);
+    scanf("%20s", pan_buffer);  //Read up to 20 characters to avoid buffer overflow
+}
+
+EN_cardError_t getCardPAN(ST_cardData_t *cardData) {
+    char pan[20];                //Buffer to store the input PAN
+
+    pan_num_input(pan);
+
+    // Check if PAN is NULL or empty
+    if (pan[0] == '\0') {
+        return WRONG_PAN;
+    }
+
+    // Check if PAN length is within the allowed range
+    char  panLength = strlen(pan);
+    if (panLength < 16 || panLength > 19)
+    {
+        return WRONG_PAN;
+    }
+
+    // PAN is valid, copy it to cardData
+    strcpy(cardData->primaryAccountNumber, pan);
+
+    return CARD_OK;
+}
+
+
+/******************************************* End of getCardPAN Function **********************************************/
+
+
+/******************************************* getCardPAN Test Function **********************************************/
+
+
+void getCardPANTest() {
+    // Test Case 1: Happy Case - Valid PAN (length = 16)
+    printf("Test Case 1:\n");
+    printf("Input Data: Valid PAN (16 digits)\n");
+    printf("Expected Result: CARD_OK\n");
+    ST_cardData_t cardData1;
+    EN_cardError_t result1 = getCardPAN(&cardData1);
+    printf("Actual Result: %s\n", result1 == CARD_OK ? "CARD_OK" : "WRONG_PAN");
+    printf("\n");
+
+    // Test Case 2: Invalid PAN (length < 16)
+    printf("Test Case 2:\n");
+    printf("Input Data: Invalid PAN (less than 16 digits)\n");
+    printf("Expected Result: WRONG_PAN\n");
+    ST_cardData_t cardData2;
+    EN_cardError_t result2 = getCardPAN(&cardData2);
+    printf("Actual Result: %s\n", result2 == WRONG_PAN ? "WRONG_PAN" : "CARD_OK");
+    printf("\n");
+
+// Test Case 3: Invalid PAN (characters instead of numbers)
+    printf("Test Case 3:\n");
+    printf("Input Data: PAN with characters (not numbers)\n");
+    printf("Expected Result: WRONG_PAN\n");
+    ST_cardData_t cardData3;
+    // Simulate entering characters instead of numbers
+    strcpy(cardData3.primaryAccountNumber, "ABCDE12345");
+    EN_cardError_t result3 = getCardPAN(&cardData3);
+    if(result3 == CARD_OK)
+    {
+            printf("Actual Result: CARD_OK \n\n");
+
+    }
+    else
+    {
+         printf("Actual Result: WRONG_PAN \n\n");
+    }
+    printf("\n");
+
+
+}
+
+/******************************************* End ofgetCardPAN Test Function **********************************************/
+
+=======
 EN_cardError_t getCardPAN(ST_cardData_t *cardData)
 {
 }
+
