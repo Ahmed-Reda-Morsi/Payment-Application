@@ -1,16 +1,86 @@
 #include"server.h"
 
 uint32_t totalNumOfTransactions = 0;
+ST_accountsDB_t accountsDB[255] = {
+    {2000.0, RUNNING, "8989374615436851"},
+    {100000.0, BLOCKED, "5807007076043875"},
+    {1500.0, RUNNING, "4532015112830366"},
+    {8500.0, RUNNING, "371449635398431"},
+    {6000.0, RUNNING, "6011111111111117"},
+    // Add more accounts as needed for testing
+};
 
 EN_transState_t recieveTransactionData(ST_transaction_t *transData)
 {
 
 }
 
-EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *accountRefrence)\
+EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *accountReference)
 {
+    uint8_t counter;
+    uint8_t enteredPAN[20];
+    uint8_t completeFlag = 0;
+
+    strcpy(enteredPAN, cardData->primaryAccountNumber); // Copy the primary account number to enteredPAN
+
+    for (counter = 0; counter < 255; counter++)
+    {
+        // Compare enteredPAN with each account's primary account number in the accountsDB
+        if (!(strcmp(enteredPAN, accountsDB[counter].primaryAccountNumber)))
+        {
+            // If a match is found, copy the account details to accountReference
+            strcpy(accountReference->primaryAccountNumber, accountsDB[counter].primaryAccountNumber);
+            accountReference->balance = accountsDB[counter].balance;
+            accountReference->state = accountsDB[counter].state;
+            completeFlag = 1; // Set the flag to indicate a successful match
+        }
+    }
+
+    if (completeFlag)
+    {
+        return SERVER_OK; // Return SERVER_OK if a matching account was found
+    }
+    else
+    {
+        accountReference = NULL; // Set accountReference to NULL since no matching account was found
+        return ACCOUNT_NOT_FOUND; // Return ACCOUNT_NOT_FOUND error code
+    }
+}
+
+void isValidAccountTest(void)
+{
+    ST_cardData_t cardData;
+    ST_accountsDB_t *accountRefrence;
+    EN_serverError_t errorResult;
+
+    strcpy(cardData.primaryAccountNumber,"8989374615436851");
+    printf("Tester Name: Ahmed Hazem Kamal\n");
+    printf("Function Name: isValidAccount\n");
+    printf("---------------------------\n");
+
+    // Test Case 1: Valid Card PAN
+    printf("Test Case 1: Valid Card PAN\n");
+    printf("Expected Result: PAN is found\n");
+    errorResult = isValidAccount(&cardData,&accountRefrence);
+    if (errorResult == SERVER_OK)
+        printf("Actual Result: PAN is found\n");
+    else
+        printf("Actual Result: Wrong PAN\n");
+    printf("---------------------------\n");
+
+    strcpy(cardData.primaryAccountNumber,"8989374655436855");
+    // Test Case 2: Invalid Card PAN
+    printf("Test Case 2: Invalid Card PAN\n");
+    printf("Expected Result: PAN is not found\n");
+    errorResult = isValidAccount(&cardData,&accountRefrence);
+    if (errorResult == ACCOUNT_NOT_FOUND)
+        printf("Actual Result: PAN is not found\n");
+    else
+        printf("Actual Result: PAN is found\n");
+    printf("---------------------------\n");
 
 }
+
 EN_serverError_t isBlockedAccount(ST_accountsDB_t *accountRefrence)
 {
 

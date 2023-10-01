@@ -1,10 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "../Card/card.h"
-#include "../Terminal/terminal.h"
-//#include "card.h"
-//#include "terminal.h"
+//#include "../Card/card.h"
+//#include "../Terminal/terminal.h"
+#include "card.h"
+#include "terminal.h"
 
 
 typedef enum EN_transState_t
@@ -45,5 +45,6 @@ void listSavedTransactions(void);
 
 ////////////////////////Testing Functions/////////////////////////////////////
 void saveTransactionTest(void);
+void isValidAccountTest(void);
 
 #endif
