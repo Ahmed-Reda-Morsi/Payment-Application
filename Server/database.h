@@ -13,4 +13,18 @@ ST_accountsDB_t accountsDB[255] = {
 };
 
 
-ST_transaction transactionDB[255] = {0};
+ST_transaction_t transactionDB[255] =
+{
+    {
+        {"AhmedHazemKamalEldinAb", "8989374615436851", "09/29"},
+        {1000.00, 1200.00, "30/09/2023"},
+        APPROVED,
+        1
+    },
+    {
+        {"AhmedHazemKamalEldinAb", "8989374615436851", "09/29"},
+        {1000.00, 1200.00, "30/09/2023"},
+        APPROVED,
+        2
+    },
+};
