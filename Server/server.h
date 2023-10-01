@@ -43,8 +43,11 @@ EN_serverError_t saveTransaction(ST_transaction_t *transData);
 EN_serverError_t saveAccount();
 void listSavedTransactions(void);
 
-////////////////////////Testing Functions/////////////////////////////////////
+//_____________________| testing Functions |__________________________________//
+void isBlockedAccountTest(void);
+void listSavedTransactions(void);
 void saveTransactionTest(void);
 void isValidAccountTest(void);
+void isAmountAvailableTest(void);
 
 #endif
