@@ -25,4 +25,5 @@ void isCardExpriedTest(void);
 void getTransactionAmountTest(void);
 void isBelowMaxAmountTest(void);
 void setMaxAmountTest(void);
+void getTransactionDateTest(void);
 #endif

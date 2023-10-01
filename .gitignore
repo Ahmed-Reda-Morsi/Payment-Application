@@ -1,4 +1,9 @@
-.vscode/c_cpp_properties.json
-.vscode/launch.json
-.vscode/settings.json
-.vscode/tasks.json
+
+functions.c
+cardModuleTestCases_main.exe
+*.json
+*.o
+*.exe
+temps/cardModuleTestCases_main.c
+temps/tempCodeRunnerFile.c
+temps/test.c
