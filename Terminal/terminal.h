@@ -22,5 +22,8 @@ EN_terminalError_t isValidCardPAN(ST_cardData_t *cardData); // Optional
 
 //______| testing functions |_______________
 void isCardExpriedTest(void);
+void getTransactionAmountTest(void);
+void isBelowMaxAmountTest(void);
+void setMaxAmountTest(void);
 void getTransactionDateTest(void);
 #endif
