@@ -86,6 +86,49 @@ void saveTransactionTest(void)
 	saveTransaction(&transData);
 
 }
+
+EN_serverError_t saveAccount()
+{
+    FILE *fptr; // File pointer for transactions database
+    fptr = fopen("Accounts DB.txt", "a"); // Open the file in append mode
+    uint8_t completeFlag = 0;
+    ST_cardData_t cardData;
+    if (!fptr)
+    {
+        // If the file cannot be opened, display an error message
+        printf("Accounts DB is not available.\n");
+        return INTERNAL_SERVER_ERROR; // Return the error code for internal server error
+    }
+
+    if(getCardPAN(&cardData) == CARD_OK)
+    {
+        // If the card PAN matches the valid PAN requirements, Increase the flag
+        fprintf(fptr,"%d ",cardData.primaryAccountNumber);
+        completeFlag++;
+    }
+
+
+    if(getCardHolderName(&cardData) == CARD_OK)
+    {
+        // If the card Holder Name matches the valid Name requirements, Increase the flag
+        fprintf(fptr,"%s ",cardData.cardHolderName);
+        completeFlag++;
+    }
+
+    if(getCardExpiryDate(&cardData) == CARD_OK)
+    {
+        // If the card Expire date matches the valid expire date requirements, Increase the flag
+        fprintf(fptr,"%d ",cardData.cardExpirationDate);
+        completeFlag++;
+    }
+
+    // If all the inputs are correct , return the success code
+    if(completeFlag == 3)
+        return SERVER_OK;
+    else
+        return SAVING_FAILED;
+}
+
 void listSavedTransactions(void)
 {
 
