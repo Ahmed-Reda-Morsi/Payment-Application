@@ -131,20 +131,11 @@ EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *Valid_
     uint8_t enteredPAN[20];
     uint8_t completeFlag = 0;
 
-   // strcpy(enteredPAN,cardData->primaryAccountNumber); // Copy the primary account number to enteredPAN
-    //printf(" \ndebug cardData->primaryAccountNumber =%s\n",cardData->primaryAccountNumber);
-        //printf(" \ndebug enteredPAN =%s\n",enteredPAN);
-
     for (counter = 0; counter < 255; counter++)
     {
         // Compare enteredPAN with each account's primary account number in the accountsDB
         if (!(strcmp(cardData->primaryAccountNumber, accountsDB[counter].primaryAccountNumber)))
         {
-            //Main_Global_Balance.balance=accountsDB[counter].balance;
-           // printf("\niside Main_g_balnc=%.2f\n",Main_Global_Balance);
-            // If a match is found, update the pointer to the account in accountRefrence
-            //printf("\naccountsDB[ %d] =%s \n   Address of accountsDB %d \n",counter,accountsDB[counter].primaryAccountNumber,&accountsDB[counter]);
-            //printf("DEBUG pan=%s \n  balance=%0.2f ",accountsDB[counter].primaryAccountNumber,accountsDB[counter].balance);
             Valid_Local_accountReference = &accountsDB[counter];
             completeFlag = 1; // Set the flag to indicate a successful match
             break; // Exit the loop since a match was found
@@ -159,7 +150,6 @@ EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *Valid_
     }
     else
     {
-        //*Global_accountReference = NULL; // Set accountRefrence to NULL since no matching account was found
         return ACCOUNT_NOT_FOUND; // Return ACCOUNT_NOT_FOUND error code
     }
 }

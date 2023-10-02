@@ -1,7 +1,5 @@
 
-
-#include <stdio.h>
-// to use atoi function to covert string to int.
+#include <stdio.h>// to use atoi function to covert string to int.
 #include "card.h"
 #include <time.h>   // to get OS date
 #include <stdlib.h> // to use atoi function to covert string to int.
@@ -299,5 +297,3 @@ void getCardPANTest()
 }
 
 //******************************************* End ofgetCardPAN Test Function **********************************************/
-
-
