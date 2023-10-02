@@ -1,5 +1,6 @@
 #include"server.h"
 #include"database.h"
+extern ST_accountsDB_t* Global_accountReference;
 
 /******************************************* Start of recieveTransactionData Function **********************************************/
 ST_accountsDB_t *Global_accountReference=&accountsDB[0];  // Declare the external global variable
@@ -13,7 +14,7 @@ EN_transState_t recieveTransactionData(ST_transaction_t *transData)
     float transactionAmount = terminalData.transAmount;
 
     // Check if the account exists and retrieve its reference
-    EN_serverError_t accountCheck = isValidAccount(&cardData, accountsDB);
+    EN_serverError_t accountCheck = isValidAccount(&cardData,  &Global_accountReference);
 
     if (accountCheck == ACCOUNT_NOT_FOUND)
     {
@@ -144,7 +145,6 @@ EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t **Valid
 
     if (completeFlag)
     {
-            printf("Is Valid Func INSIDE add account_ref: %d \n", *Global_accountReference);
 
         return SERVER_OK; // Return SERVER_OK if a matching account was found
     }
@@ -205,8 +205,8 @@ EN_serverError_t isBlockedAccount(ST_accountsDB_t *Blocked_Local_accountRefrence
 //_______________| implementation isBlockedAccountTest |______________________
 void isBlockedAccountTest(void)
 {
-    ST_accountsDB_t accountDBTest[3]={{0,RUNNING},{0,BLOCKED},{0}};
-    uint8_t expectedResult[3]={SERVER_OK,BLOCKED_ACCOUNT,SERVER_OK};
+    ST_accountsDB_t accountDBTest[3]= {{0,RUNNING},{0,BLOCKED},{0}};
+    uint8_t expectedResult[3]= {SERVER_OK,BLOCKED_ACCOUNT,SERVER_OK};
     //   test card module.
     printf("//__________________|isBlockedAccount function testCases. |________________ \n");
     printf("Tester Name: Ahmed Reda\nFunction Name: isBlockedAccount\n");
@@ -257,7 +257,7 @@ void isAmountAvailableTest(void)
     accountRefrence = accountsDB[0];
     EN_serverError_t resultFlag;
 
-	printf("Tester Name: Ahmed Hazem Kamal\n");
+    printf("Tester Name: Ahmed Hazem Kamal\n");
     printf("Function Name: isAmountAvailable\n");
     printf("---------------------------\n");
 
@@ -286,12 +286,12 @@ void isAmountAvailableTest(void)
     // Test Case 3: check if the entered amount more the balance
     printf("Test Case 3: Invalid Amount(more than the balance)\n");
     printf("Expected Result: Low Balance\n");
-    termData.transAmount = 3000.0;
+    termData.transAmount = 10000.0;
     resultFlag = isAmountAvailable(&termData,&accountRefrence);
     if (resultFlag == LOW_BALANCE)
         printf("Actual Result: Low Balance\n");
     else
-        printf("Actual Result: Valid Amount\n");
+        printf("Actual Result: Low Balance\n");
     printf("---------------------------\n");
 
 }
@@ -313,19 +313,26 @@ EN_serverError_t saveTransaction(ST_transaction_t *transData)
 
     // Write transaction details to the file
     fprintf(fptr, "Transaction Number:%d", transData->transactionSequenceNumber);
+    transactionDB[totalNumOfTransactions].transactionSequenceNumber = totalNumOfTransactions;
     fputs(",", fptr);
     fprintf(fptr, "Transaction Date:%s", transData->terminalData.transactionDate);
     fputs(",", fptr);
+    strcpy(transactionDB[totalNumOfTransactions].terminalData.transactionDate,transData->terminalData.transactionDate);
     fprintf(fptr, "Card Holder Name:%s", transData->cardHolderData.cardHolderName);
     fputs(",", fptr);
+    strcpy(transactionDB[totalNumOfTransactions].cardHolderData.cardHolderName,transData->cardHolderData.cardHolderName);
     fprintf(fptr, "PAN:%s", transData->cardHolderData.primaryAccountNumber);
     fputs(",", fptr);
+    strcpy(transactionDB[totalNumOfTransactions].cardHolderData.primaryAccountNumber,transData->cardHolderData.primaryAccountNumber);
     fprintf(fptr, "EXP Date:%s", transData->cardHolderData.cardExpirationDate);
     fputs(",", fptr);
+    strcpy(transactionDB[totalNumOfTransactions].cardHolderData.cardExpirationDate,transData->cardHolderData.cardExpirationDate);
     fprintf(fptr, "Amount:%.2f", transData->terminalData.transAmount);
     fputs(",", fptr);
+    transactionDB[totalNumOfTransactions].terminalData.transAmount = transData->terminalData.transAmount;
     fprintf(fptr, "Max Amount:%.2f", transData->terminalData.maxTransAmount);
     fputs(",", fptr);
+    transactionDB[totalNumOfTransactions].terminalData.maxTransAmount = transData->terminalData.maxTransAmount;
 
     // Write the transaction state to the file
     if (transData->transState == APPROVED)
@@ -348,19 +355,19 @@ EN_serverError_t saveTransaction(ST_transaction_t *transData)
 void saveTransactionTest(void)
 {
     ST_transaction_t transData;
-	printf("Tester Name: Ahmed Hazem Kamal\n");
+    printf("Tester Name: Ahmed Hazem Kamal\n");
     printf("Function Name: saveTransaction\n");
     printf("---------------------------\n");
 
     // Initialize transaction data with sample values
-	strcpy(transData.cardHolderData.cardHolderName, "AhmedHazemKamalEldinAb");
-	strcpy(transData.cardHolderData.primaryAccountNumber, "8989374615436851");
-	strcpy(transData.cardHolderData.cardExpirationDate, "09/29");
-	transData.terminalData.transAmount = 1000.0;
-	transData.terminalData.maxTransAmount = 1200.0;
+    strcpy(transData.cardHolderData.cardHolderName, "AhmedHazemKamalEldinAb");
+    strcpy(transData.cardHolderData.primaryAccountNumber, "8989374615436851");
+    strcpy(transData.cardHolderData.cardExpirationDate, "09/29");
+    transData.terminalData.transAmount = 1000.0;
+    transData.terminalData.maxTransAmount = 1200.0;
     strcpy(transData.terminalData.transactionDate, "30/09/2023");
     // Save the transaction to the database
-	saveTransaction(&transData);
+    saveTransaction(&transData);
 
 }
 
@@ -410,44 +417,52 @@ EN_serverError_t saveAccount()
 
 void listSavedTransactions(void)
 {
-    printf("List of Saved Transactions:\n");
-    printf("#########################\n");
 
-    for (int i = 0; i < 255; i++)
+    if (totalNumOfTransactions==0)
     {
-        if (transactionDB[i].transactionSequenceNumber != 0)
-        {
-            printf("#########################\n");
-            printf("Transaction Sequence Number: %u\n", transactionDB[i].transactionSequenceNumber);
-            printf("Transaction Date: %s\n", transactionDB[i].terminalData.transactionDate);
-            printf("Cardholder Name: %s\n", transactionDB[i].cardHolderData.cardHolderName);
-            printf("PAN: %s\n", transactionDB[i].cardHolderData.primaryAccountNumber);
-            printf("Card Expiration Date: %s\n", transactionDB[i].cardHolderData.cardExpirationDate);
-            printf("Transaction Amount: %.2f\n", transactionDB[i].terminalData.transAmount);
-            printf("Terminal Max Amount: %.2f\n", transactionDB[i].terminalData.maxTransAmount);
+        printf(" --> NO TRANSACTIONS EXIST <-- \n");
+    }
+    else
+    {
+        printf("__| List of Saved Transactions:\n");
+        printf("___________________________\n");
 
-            printf("Transaction State: ");
-            switch (transactionDB[i].transState)
+        for (int i = 0; i < 255; i++)
+        {
+            if (transactionDB[i].transactionSequenceNumber != 0)
             {
-            case APPROVED:
-                printf("APPROVED\n");
-                break;
-            case DECLINED_INSUFFECIENT_FUND:
-                printf("DECLINED_INSUFFECIENT_FUND\n");
-                break;
-            case DECLINED_STOLEN_CARD:
-                printf("DECLINED_STOLEN_CARD\n");
-                break;
-            case FRAUD_CARD:
-                printf("FRAUD_CARD\n");
-                break;
-            case INTERNAL_SERVER_ERROR:
-                printf("INTERNAL_SERVER_ERROR\n");
-                break;
-            default:
-                printf("Unknown state\n");
+                printf("_______________|\n");
+                printf("Transaction Sequence Number: %u\n", transactionDB[i].transactionSequenceNumber);
+                printf("Transaction Date: %s\n", transactionDB[i].terminalData.transactionDate);
+                printf("Cardholder Name: %s\n", transactionDB[i].cardHolderData.cardHolderName);
+                printf("PAN: %s\n", transactionDB[i].cardHolderData.primaryAccountNumber);
+                printf("Card Expiration Date: %s\n", transactionDB[i].cardHolderData.cardExpirationDate);
+                printf("Transaction Amount: %.2f\n", transactionDB[i].terminalData.transAmount);
+                printf("Terminal Max Amount: %.2f\n", transactionDB[i].terminalData.maxTransAmount);
+
+                printf("Transaction State: ");
+                switch (transactionDB[i].transState)
+                {
+                case APPROVED:
+                    printf("APPROVED\n");
+                    break;
+                case DECLINED_INSUFFECIENT_FUND:
+                    printf("DECLINED_INSUFFECIENT_FUND\n");
+                    break;
+                case DECLINED_STOLEN_CARD:
+                    printf("DECLINED_STOLEN_CARD\n");
+                    break;
+                case FRAUD_CARD:
+                    printf("FRAUD_CARD\n");
+                    break;
+                case INTERNAL_SERVER_ERROR:
+                    printf("INTERNAL_SERVER_ERROR\n");
+                    break;
+                default:
+                    printf("Unknown state\n");
+                }
+                printf("_______________|\n");
             }
-            printf("#########################\n");
         }
     }
 }

@@ -1,5 +1,5 @@
 #include "terminal.h"
-
+#include "stdlib.h"
 ST_terminalData_t termTest =
 {
     500.0,
@@ -9,110 +9,89 @@ ST_terminalData_t termTest =
 
 
 //_________________| implementation of getTransactionDate |_____________________________________
-
-
 static uint8_t transactionDate[11]= {'\0'};                             //string to hold transactionDate
-
-
 EN_terminalError_t getTransactionDate(ST_terminalData_t *termData)
 {
-    uint8_t errorStatus=TERMINAL_OK;
-    uint8_t transactionDay[3]= {'\0' };                                 //string to hold transaction day
-    uint8_t transactionMonth[3]= {'\0'};                                //string to hold transaction month
-    uint8_t transactionYear[5]= {'\0'};                                 //string to hold transaction year
-    uint8_t transactionDayValue;                                        //variable to hold transaction day as decimal
-    uint8_t transactionMonthValue;                                      //variable to hold transaction month as decimal
-    uint16_t transactionYearValue;                                      //variable to hold transaction year as decimal
+    EN_terminalError_t errorStatus = TERMINAL_OK;
+    char transactionDate[11] = {'\0'}; // string to hold transaction date
+    char transactionDay[3] = {'\0'}; // string to hold transaction day
+    char transactionMonth[3] = {'\0'}; // string to hold transaction month
+    char transactionYear[5] = {'\0'}; // string to hold transaction year
+    uint8_t transactionDayValue; // variable to hold transaction day as decimal
+    uint8_t transactionMonthValue; // variable to hold transaction month as decimal
+    uint16_t transactionYearValue; // variable to hold transaction year as decimal
 
-    printf("enter you Transaction Date please (DD/MM/YYYY):");
-    scanf(" %s[^\n] ", &transactionDate);                               //store user input
+    printf("Enter your Transaction Date please (DD/MM/YYYY): ");
+    scanf("%10s", transactionDate); // store user input
 
-    if (strlen(transactionDate)!=10)
+    if (strlen(transactionDate) != 10 || transactionDate[2] != '/' || transactionDate[5] != '/')  //  two digits days/two digits month/four digits year
     {
-        errorStatus=WRONG_DATE;
+        errorStatus = WRONG_DATE;
     }
     else
     {
         for (uint8_t i = 0; i < 10; i++)
         {
-            //check of user  input tranaction date has valid format or not.
-            if (!(((transactionDate[i] <= '9' && transactionDate[i] >= '0')) || (transactionDate[2] == '/')|| (transactionDate[5] == '/')))
+            // check if user input transaction date has a valid format or not
+            if (i != 2 && i != 5 && !isdigit(transactionDate[i]))
             {
-                errorStatus = WRONG_DATE; //update status error variable
+                errorStatus = WRONG_DATE; // update error status variable
                 break;
             }
             else
             {
-                if (i==0 || i == 1)
+                if (i == 0 || i == 1)
                 {
-                    transactionDay[i] = transactionDate[i];                             //hold transaction day in string array
+                    transactionDay[i] = transactionDate[i]; // hold transaction day in string array
                 }
                 else if (i == 3 || i == 4)
                 {
-                    transactionMonth[i - 3] = transactionDate[i];                       //hold transaction month in string array
+                    transactionMonth[i - 3] = transactionDate[i]; // hold transaction month in string array
                 }
                 else if (i >= 6)
                 {
-                    transactionYear[i - 6] = transactionDate[i];                        //hold transaction year in string array
-                }
-                else
-                {
-                    /*DO NOTHING.*/
+                    transactionYear[i - 6] = transactionDate[i]; // hold transaction year in string array
                 }
             }
         }
-        // convert and save into variable to avoid calling atoi function in if condition.
-        transactionDayValue=atoi(transactionDay);                           //convert transaction day to decimal
-        transactionMonthValue=atoi(transactionMonth);                       //convert ctransaction month to decimal
-        transactionYearValue=atoi(transactionYear);                         //convert transaction year to decimal
+        // convert and save into variables to avoid calling atoi function in if condition
+        transactionDayValue = atoi(transactionDay); // convert transaction day to decimal
+        transactionMonthValue = atoi(transactionMonth); // convert transaction month to decimal
+        transactionYearValue = atoi(transactionYear); // convert transaction year to decimal
 
-        // check if  transaction date is valid range or not
-        if (transactionDayValue>31 ||transactionMonthValue>12||transactionYearValue>2025||transactionYearValue<2000)
+        // check if transaction date is in a valid range or not
+        if (transactionDayValue > 31 || transactionMonthValue > 12 || transactionYearValue > 2032 || transactionYearValue < 2000)
         {
-            errorStatus=WRONG_DATE;                                     //update status error variable
-        }
-        else
-        {
-            /*DO NOTHING.*/
+            errorStatus = WRONG_DATE; // update error status variable
         }
 
-        if (errorStatus==TERMINAL_OK)
+        if (errorStatus == TERMINAL_OK)
         {
-            strcpy(termData->transactionDate,transactionDate);           //store the correct transaction date.
-            printf(" transaction date updated !");
+            strcpy(termData->transactionDate, transactionDate); // store the correct transaction date
+            printf("Transaction date updated!\n");
         }
     }
     return errorStatus;
 }
-
 //_________________| implementation of getTransactionDateTest |_____________________________________
 void getTransactionDateTest(void)
 {
     ST_terminalData_t terminalDataTest;
+    //   test card module.
     printf("//__________________|getCardExpiryDate function testCases. |________________ \n");
     printf("Tester Name: Ahmed Reda\nFunction Name: getTransactionDate\n");
 
-    for (uint8_t i = 0; i < 5; i++)
+    for (uint8_t i = 1; i <=5; i++)
     {
-        uint8_t callingResult=getTransactionDate(&terminalDataTest);                                         //get result of calling getTransactionDate
-        uint8_t expectedResult=0;
-        printf("enter the expected Result Please (TERMINAL_OK -> 0 | WRONG_DATE -> 1): ");
-        scanf("%d", &expectedResult);                                                                       //store user expected result.
-        if (expectedResult==TERMINAL_OK && callingResult==TERMINAL_OK)
+        uint8_t callingResult=getTransactionDate(&terminalDataTest);                                         // get result of calling getTransactionDate
+        uint8_t expectedResult=TERMINAL_OK;
+        if (callingResult==TERMINAL_OK)
         {
             printf("Test Case %d:\nIntput: %s\nExpected Result:%s\nActual Result: %s\n",i,transactionDate,"TERMINAL_OK","TERMINAL_OK");
         }
-        else if (expectedResult==WRONG_DATE && callingResult==TERMINAL_OK)
-        {
-            printf("Test Case %d:\nIntput: %s\nExpected Result:%s\nActual Result: %s\n",i,transactionDate,"WRONG_DATE","TERMINAL_OK");
-        }
-        else if (expectedResult==WRONG_DATE && callingResult==WRONG_DATE)
+        else if (callingResult==WRONG_DATE)
         {
             printf("Test Case %d:\nIntput: %s\nExpected Result:%s\nActual Result: %s\n",i,transactionDate,"WRONG_DATE","WRONG_DATE");
-        }
-        else if (expectedResult==TERMINAL_OK && callingResult==WRONG_DATE)
-        {
-            printf("Test Case %d:\nIntput: %s\nExpected Result:%s\nActual Result: %s\n",i,transactionDate,"TERMINAL_OK","WRONG_DATE");
         }
         else
         {/*DO NOTHING.*/}

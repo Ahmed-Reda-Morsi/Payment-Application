@@ -38,7 +38,7 @@ EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData);
 EN_cardError_t getCardPAN(ST_cardData_t *cardData);
 
 //Testing functions
-EN_cardError_t isNameValid(uint8_t *name);
+EN_cardError_t isNameValid(const uint8_t *name);
 void getCardHolderNameTest(void);
 void getCardExpiryDateTest(void);
 void getCardPANTest(void);
