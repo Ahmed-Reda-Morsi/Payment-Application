@@ -1,20 +1,21 @@
 
-    
-#include <stdio.h>
-                                                  // to use atoi function to covert string to int.
+#include <stdio.h>// to use atoi function to covert string to int.
 #include "card.h"
 #include <time.h>   // to get OS date
 #include <stdlib.h> // to use atoi function to covert string to int.
 
 static uint8_t cardExpiredDate[6];
 
-uint8_t isNameValid(const char *name) {
+uint8_t isNameValid(const char *name)
+{
 
     // Check if the entered characters is valid
-    for (uint8_t i = 0; i < strlen(name) - 1; i++) {
+    for (uint8_t i = 0; i < strlen(name) - 1; i++)
+    {
         if (!((name[i] >= 'a' && name[i] <= 'z') ||
-              (name[i] >= 'A' && name[i] <= 'Z') ||
-              (name[i] == ' '))) {
+                (name[i] >= 'A' && name[i] <= 'Z') ||
+                (name[i] == ' ')))
+        {
             return 0;
         }
     }
@@ -29,7 +30,8 @@ EN_cardError_t getCardHolderName(ST_cardData_t *cardData)
     printf("Please Enter Your Name : \n"); // Prompt the user to enter their name
     fgets(holderName, sizeof(holderName), stdin); // Read the user's input and store it in holderName
 
-     if (!isNameValid(holderName)) {
+    if (!isNameValid(holderName))
+    {
         return WRONG_NAME; // Name contains invalid characters
     }
 
@@ -97,7 +99,7 @@ void getCardHolderNameTest(void)
 
 }
 //____________| implementation of getCardExpiryDate function   |_________________________
-static uint8_t cardExpiredDate[6];                     // to hold cardExpiredDate 
+static uint8_t cardExpiredDate[6];                     // to hold cardExpiredDate
 EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData)
 {
     EN_cardError_t errorStatus = CARD_OK; // return variable for error status
@@ -126,7 +128,8 @@ EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData)
                 break;
             }
             else
-            { /*DO NOTHING.*/
+            {
+                /*DO NOTHING.*/
             }
 
             if (i < 2)
@@ -143,7 +146,8 @@ EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData)
                 cardExpiredYear[i - 3] = cardExpiredDate[i]; // hold card expired year in string array
             }
             else
-            { /*DO NOTHING*/
+            {
+                /*DO NOTHING*/
             }
         }
 
@@ -163,7 +167,8 @@ EN_cardError_t getCardExpiryDate(ST_cardData_t *cardData)
             printf("-> cardExpiredData is updated !\n");
         }
         else
-        { /*DO NOTHING.*/
+        {
+            /*DO NOTHING.*/
         }
     }
 
@@ -202,26 +207,30 @@ void getCardExpiryDateTest(void)
             printf("Test Case %d:\nIntput: %s\nExpected Result: %s\nActual Result:   %s\n", i, cardExpiredDate, "CARD_OK", "WRONG_EXP_DATE");
         }
         else
-        { /*DO NOTHING.*/
+        {
+            /*DO NOTHING.*/
         }
     }
 }
 
 //******************************************* getCardPAN Function **********************************************/
 
-void pan_num_input(char *pan_buffer) {
+void pan_num_input(char *pan_buffer)
+{
     printf("Enter the card's Primary Account Number (PAN): ");
     fflush(stdin);
     scanf("%20s", pan_buffer);  //Read up to 20 characters to avoid buffer overflow
 }
 
-EN_cardError_t getCardPAN(ST_cardData_t *cardData) {
+EN_cardError_t getCardPAN(ST_cardData_t *cardData)
+{
     char pan[20];                //Buffer to store the input PAN
 
     pan_num_input(pan);
 
     // Check if PAN is NULL or empty
-    if (pan[0] == '\0') {
+    if (pan[0] == '\0')
+    {
         return WRONG_PAN;
     }
 
@@ -245,7 +254,8 @@ EN_cardError_t getCardPAN(ST_cardData_t *cardData) {
 //******************************************* getCardPAN Test Function **********************************************/
 
 
-void getCardPANTest() {
+void getCardPANTest()
+{
     // Test Case 1: Happy Case - Valid PAN (length = 16)
     printf("Test Case 1:\n");
     printf("Input Data: Valid PAN (16 digits)\n");
@@ -274,12 +284,12 @@ void getCardPANTest() {
     EN_cardError_t result3 = getCardPAN(&cardData3);
     if(result3 == CARD_OK)
     {
-            printf("Actual Result: CARD_OK \n\n");
+        printf("Actual Result: CARD_OK \n\n");
 
     }
     else
     {
-         printf("Actual Result: WRONG_PAN \n\n");
+        printf("Actual Result: WRONG_PAN \n\n");
     }
     printf("\n");
 
@@ -287,9 +297,3 @@ void getCardPANTest() {
 }
 
 //******************************************* End ofgetCardPAN Test Function **********************************************/
-
-EN_cardError_t getCardPAN(ST_cardData_t *cardData)
-{
-
-}
-

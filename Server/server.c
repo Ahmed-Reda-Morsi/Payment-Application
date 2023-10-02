@@ -2,16 +2,8 @@
 #include"database.h"
 
 /******************************************* Start of recieveTransactionData Function **********************************************/
-
+ST_accountsDB_t *Global_accountReference=&accountsDB[0];  // Declare the external global variable
 uint32_t totalNumOfTransactions = 0;
-ST_accountsDB_t accountsDB[255] = {
-    {2000.0, RUNNING, "8989374615436851"},
-    {100000.0, BLOCKED, "5807007076043875"},
-    {1500.0, RUNNING, "4532015112830366"},
-    {8500.0, RUNNING, "371449635398431"},
-    {6000.0, RUNNING, "6011111111111117"},
-    // Add more accounts as needed for testing
-};
 
 EN_transState_t recieveTransactionData(ST_transaction_t *transData)
 {
@@ -133,40 +125,34 @@ void recieveTransactionDataTest(void)
 
 
 //******************************************* End of recieveTransactionDataTest **********************************************/
-EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *accountRefrence)\
-
+EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *Valid_Local_accountReference)
 {
     uint8_t counter;
     uint8_t enteredPAN[20];
     uint8_t completeFlag = 0;
 
-    strcpy(enteredPAN, cardData->primaryAccountNumber); // Copy the primary account number to enteredPAN
-
     for (counter = 0; counter < 255; counter++)
     {
         // Compare enteredPAN with each account's primary account number in the accountsDB
-        if (!(strcmp(enteredPAN, accountsDB[counter].primaryAccountNumber)))
+        if (!(strcmp(cardData->primaryAccountNumber, accountsDB[counter].primaryAccountNumber)))
         {
-            // If a match is found, copy the account details to accountReference
-            strcpy(accountReference->primaryAccountNumber, accountsDB[counter].primaryAccountNumber);
-            accountReference->balance = accountsDB[counter].balance;
-            accountReference->state = accountsDB[counter].state;
+            Valid_Local_accountReference = &accountsDB[counter];
             completeFlag = 1; // Set the flag to indicate a successful match
-            accountReference=&(accountsDB[counter]);
+            break; // Exit the loop since a match was found
         }
     }
 
     if (completeFlag)
     {
+            printf("Is Valid Func INSIDE add account_ref: %d \n", *Global_accountReference);
+
         return SERVER_OK; // Return SERVER_OK if a matching account was found
     }
     else
     {
-        accountReference = NULL; // Set accountReference to NULL since no matching account was found
         return ACCOUNT_NOT_FOUND; // Return ACCOUNT_NOT_FOUND error code
     }
 }
-
 void isValidAccountTest(void)
 {
     ST_cardData_t cardData;
@@ -204,16 +190,16 @@ void isValidAccountTest(void)
 //_______________| implementation isBlockAccount |____________________________
 /* This function takes a reference to the account into the database and verifies
     if it is blocked or not. */
-EN_serverError_t isBlockedAccount(ST_accountsDB_t *accountRefrence)
+EN_serverError_t isBlockedAccount(ST_accountsDB_t **Blocked_Local_accountRefrence)
 {
     uint8_t errorStatus=SERVER_OK;                       // return variable for error statu
     // check if the account status is running or not
-    if (accountRefrence->state!=RUNNING)
+    if ((*Blocked_Local_accountRefrence)->state!=RUNNING)
     {
         errorStatus=BLOCKED_ACCOUNT;
     }
 
-    return errorStatus;
+    return SERVER_OK;
 }
 
 //_______________| implementation isBlockedAccountTest |______________________
