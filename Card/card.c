@@ -1,51 +1,56 @@
 
-#include <stdio.h>// to use atoi function to covert string to int.
+
+#include <stdio.h>
+// to use atoi function to covert string to int.
 #include "card.h"
+#include <ctype.h>
 #include <time.h>   // to get OS date
 #include <stdlib.h> // to use atoi function to covert string to int.
 
 static uint8_t cardExpiredDate[6];
 
-uint8_t isNameValid(const char *name)
+EN_cardError_t isNameValid(uint8_t *name)
 {
-
+    EN_cardError_t errorStatus=CARD_OK;
     // Check if the entered characters is valid
-    for (uint8_t i = 0; i < strlen(name) - 1; i++)
+    for (uint8_t i = 0; name[i]; i++)
     {
-        if (!((name[i] >= 'a' && name[i] <= 'z') ||
-                (name[i] >= 'A' && name[i] <= 'Z') ||
-                (name[i] == ' ')))
+        if (!((name[i]>='a'|| name[i]<='z')||(name[i]>='A'|| name[i]<='Z')||(name[i]!=' ')))
         {
-            return 0;
+            printf("-%c",name[i]);
+            errorStatus=WRONG_NAME;
+            break;
         }
     }
-    return 1;
+    return errorStatus;
 }
 
 EN_cardError_t getCardHolderName(ST_cardData_t *cardData)
 {
-    char holderName[MAX_NAME_LENGTH + 1]; // Buffer to hold the card holder's name
+    EN_cardError_t errorStatus=CARD_OK;
+    uint8_t holderName[MAX_NAME_LENGTH + 1]; // Buffer to hold the card holder's name
     uint8_t counter = 0; // Counter variable for iteration
 
     printf("Please Enter Your Name : \n"); // Prompt the user to enter their name
-    fgets(holderName, sizeof(holderName), stdin); // Read the user's input and store it in holderName
-
-    if (!isNameValid(holderName))
+    fgets(holderName,sizeof(holderName),stdin);
+    printf("name: %s\n",holderName);
+    printf(" len %d | isvalid: %d \n",strlen(holderName),isNameValid(holderName));
+     if ((holderName[0] == '\0') || (strlen(holderName) < MIN_NAME_LENGTH) || (strlen(holderName) > MAX_NAME_LENGTH)||(isNameValid(holderName)))
     {
-        return WRONG_NAME; // Name contains invalid characters
+        errorStatus= WRONG_NAME; // Name contains invalid characters
     }
 
     // Check various conditions to determine the validity of the name
-    if ((holderName[0] == '\0') || (strlen(holderName) < MIN_NAME_LENGTH) || (strlen(holderName) > MAX_NAME_LENGTH))
-    {
-        return WRONG_NAME; // Return the error code for wrong name
-    }
+    //else if (())
+    //{
+       // errorStatus= WRONG_NAME; // Return the error code for wrong name
+   // }
     else
     {
         strcpy(cardData->cardHolderName,holderName); // Copy the valid name to the cardData structure
-        return CARD_OK; // Return the success code
+        errorStatus= CARD_OK; // Return the success code
     }
-
+    return errorStatus;
 }
 
 void getCardHolderNameTest(void)
@@ -246,9 +251,9 @@ EN_cardError_t getCardPAN(ST_cardData_t *cardData)
 
     return CARD_OK;
 }
-
-
 //******************************************* End of getCardPAN Function **********************************************/
+
+
 
 
 //******************************************* getCardPAN Test Function **********************************************/
@@ -297,3 +302,5 @@ void getCardPANTest()
 }
 
 //******************************************* End ofgetCardPAN Test Function **********************************************/
+
+

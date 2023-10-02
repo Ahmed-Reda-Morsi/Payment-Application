@@ -125,7 +125,7 @@ void recieveTransactionDataTest(void)
 
 
 //******************************************* End of recieveTransactionDataTest **********************************************/
-EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *Valid_Local_accountReference)
+EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t **Valid_Local_accountReference)
 {
     uint8_t counter;
     uint8_t enteredPAN[20];
@@ -136,7 +136,7 @@ EN_serverError_t isValidAccount(ST_cardData_t *cardData, ST_accountsDB_t *Valid_
         // Compare enteredPAN with each account's primary account number in the accountsDB
         if (!(strcmp(cardData->primaryAccountNumber, accountsDB[counter].primaryAccountNumber)))
         {
-            Valid_Local_accountReference = &accountsDB[counter];
+            *Valid_Local_accountReference = &accountsDB[counter];
             completeFlag = 1; // Set the flag to indicate a successful match
             break; // Exit the loop since a match was found
         }
@@ -190,16 +190,16 @@ void isValidAccountTest(void)
 //_______________| implementation isBlockAccount |____________________________
 /* This function takes a reference to the account into the database and verifies
     if it is blocked or not. */
-EN_serverError_t isBlockedAccount(ST_accountsDB_t **Blocked_Local_accountRefrence)
+EN_serverError_t isBlockedAccount(ST_accountsDB_t *Blocked_Local_accountRefrence)
 {
     uint8_t errorStatus=SERVER_OK;                       // return variable for error statu
     // check if the account status is running or not
-    if ((*Blocked_Local_accountRefrence)->state!=RUNNING)
+    if (Blocked_Local_accountRefrence->state!=RUNNING)
     {
         errorStatus=BLOCKED_ACCOUNT;
     }
 
-    return SERVER_OK;
+    return errorStatus;
 }
 
 //_______________| implementation isBlockedAccountTest |______________________
